@@ -93,6 +93,22 @@ async function superteamPublic() {
   } catch (e) { return { error: e.message } }
 }
 
+// Pay-per-merge bounties, but ONLY from orgs with a verified Algora payout history ("has been awarded").
+// Open "💎 Bounty" labels elsewhere are mostly free-work harvesters. Edit this list as evidence changes.
+const PROVEN_PAYERS = ['CapSoftware', 'Mudlet', 'rustdesk', 'permitio', 'outerbase', 'tscircuit', 'archestra-ai', 'activepieces', 'qdrant', 'tursodatabase']
+async function provenBounties() {
+  try {
+    const q = encodeURIComponent(`is:issue is:open label:"💎 Bounty" -label:"💰 Rewarded" ${PROVEN_PAYERS.map((o) => `org:${o}`).join(' ')} created:>2026-06-01`)
+    const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'penniless-watcher' }
+    if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`
+    const r = await fetch(`https://api.github.com/search/issues?q=${q}&per_page=30&sort=created`, { headers, signal: T(15000) })
+    if (!r.ok) return { error: `HTTP ${r.status}` }
+    const items = (await r.json()).items || []
+    return { open: items.map((i) => ({ url: i.html_url, repo: (i.repository_url || '').split('/').slice(-2).join('/'), title: (i.title || '').slice(0, 70),
+      comments: i.comments, created: (i.created_at || '').slice(0, 10), reward: (i.labels || []).map((l) => l.name).find((n) => /^\$[\d.,]+k?$/.test(n)) || '?' })) }
+  } catch (e) { return { error: e.message } }
+}
+
 // Your PRs to repos you don't own (bounty work). Merged = billable, not paid.
 async function githubPrs() {
   if (!GITHUB_USER) return { skipped: true }
@@ -112,7 +128,7 @@ async function githubPrs() {
   } catch (e) { return { error: e.message } }
 }
 
-const [usdc, solUsdcBal, solNativeBal, superteamFeed, pub, github] = await Promise.all([baseUsdc(), solUsdc(), solNative(), superteamLive(), superteamPublic(), githubPrs()])
+const [usdc, solUsdcBal, solNativeBal, superteamFeed, pub, github, proven] = await Promise.all([baseUsdc(), solUsdc(), solNative(), superteamLive(), superteamPublic(), githubPrs(), provenBounties()])
 // Merge both sources: agent feed (incl. hidden AGENT_ONLY) + public listings that accept agents.
 const merged = new Map()
 for (const o of [...(superteamFeed.open || []), ...(pub.open || [])]) if (!merged.has(o.slug)) merged.set(o.slug, o)
@@ -138,7 +154,11 @@ let seen = []
 try { seen = JSON.parse(readFileSync(new URL('./seen-listings.json', import.meta.url), 'utf8')) } catch {}
 const open = superteam.open || []
 const fresh = open.filter((o) => !seen.includes(o.slug))
-writeFileSync(new URL('./seen-listings.json', import.meta.url), JSON.stringify([...new Set([...seen, ...open.map((o) => o.slug)])]))
+// New bounties from proven payers. The first scan only records them, so it sends no alert.
+const provenOpen = proven.open || []
+const firstProvenScan = !seen.some((x) => String(x).startsWith('http'))
+const freshProven = firstProvenScan ? [] : provenOpen.filter((b) => !seen.includes(b.url))
+writeFileSync(new URL('./seen-listings.json', import.meta.url), JSON.stringify([...new Set([...seen, ...open.map((o) => o.slug), ...provenOpen.map((b) => b.url), ...(firstProvenScan ? ['http:init'] : [])])]))
 
 const snapshot = { ts: now, baseUsdc: usdc, solUsdc: solUsdcBal, solNative: solNativeBal, delta, solDelta, solNativeDelta,
   github: { total: github.total, merged: github.merged, error: github.error }, superteam: { total: superteam.total, open: open.length, skipped: superteam.skipped, error: superteam.error }, newListings: fresh.map((o) => o.slug) }
@@ -163,6 +183,11 @@ ${github.skipped ? '_not set_' : github.error ? `_err: ${github.error}_` : githu
   ? `${github.merged}/${github.total} merged${newMerge ? ' · **A PR JUST MERGED: send the invoice / claim now**' : ''}\n` + github.prs.map((p) => `- ${p.merged ? 'MERGED' : p.state === 'closed' ? 'closed' : 'open'} · [${p.repo}#${p.num}](${p.url}) ${p.title}`).join('\n')
   : '_no PRs yet_'}
 
+## Open bounties from orgs with a verified payout history
+${proven.error ? `_err: ${proven.error}_` : proven.open.length
+  ? proven.open.map((b) => `- [${b.repo}: ${b.title}](${b.url}) · ${b.reward} · ${b.comments} comments · opened ${b.created}`).join('\n')
+  : '_none open right now_'}
+
 ## Open Superteam agent listings (AGENT_ONLY first)
 ${superteam.skipped ? `_scan skipped: ${superteam.skipped}_` : superteam.error ? `_scan error: ${superteam.error}_`
   : `_${superteam.note}_\n` + (open.length ? open.map((o) => `- ${o.access === 'AGENT_ONLY' ? '**AGENT_ONLY**' : 'agent-allowed'} · [${o.title || o.slug}](https://superteam.fun/earn/listing/${o.slug}) · ${o.sponsor || ''} · ${o.type} · ${o.reward} ${o.token || ''} · deadline ${o.deadline}`).join('\n') : '_none open right now_')}
@@ -173,8 +198,10 @@ _Rewritten by \`agent.mjs\` every run. History in \`history.jsonl\`._
 writeFileSync(new URL('./status.md', import.meta.url), md)
 
 const NOTIFY = new URL('./NOTIFY.txt', import.meta.url)
-if (paid || newMerge) {
-  writeFileSync(NOTIFY, (paid ? `PAYMENT RECEIVED (${now}) Base USDC ${usdc}, Solana USDC ${solUsdcBal}, SOL ${solNativeBal}` : `PR MERGED (${now}): check status.md and send the invoice/claim`) + '\n')
+if (paid || newMerge || freshProven.length || fresh.length) {
+  writeFileSync(NOTIFY, (paid ? `PAYMENT RECEIVED (${now}) Base USDC ${usdc}, Solana USDC ${solUsdcBal}, SOL ${solNativeBal}`
+    : newMerge ? `PR MERGED (${now}): check status.md and send the invoice/claim`
+    : `NEW WORK (${now}): ${[...freshProven.map((b) => `${b.repo} ${b.reward} ${b.url}`), ...fresh.map((o) => `Superteam ${o.reward} ${o.slug}`)].join(' | ')}. Run the payment check before any work.`) + '\n')
 } else { try { unlinkSync(NOTIFY) } catch {} }
 
 console.log('status:', JSON.stringify(snapshot))

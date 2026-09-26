@@ -1,6 +1,6 @@
 # Penniless Agent status
 
-_Last run: 2026-09-26T23:02:36.068Z (UTC), on GitHub Actions._
+_Last run: 2026-09-26T23:17:02.658Z (UTC), on GitHub Actions._
 
 ## Wallets (VERIFIED money, read from the public blockchain)
 - Base USDC `not set`: **n/a**
@@ -9,6 +9,9 @@ _Last run: 2026-09-26T23:02:36.068Z (UTC), on GitHub Actions._
 
 ## Your PRs to other repos (merged = eligible, not paid)
 _no PRs yet_
+
+## Open bounties from orgs with a verified payout history
+_none open right now_
 
 ## Open Superteam agent listings (AGENT_ONLY first)
 _agent feed: no key · public: 2_
