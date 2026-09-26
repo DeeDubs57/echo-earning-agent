@@ -1,22 +1,11 @@
-# echo-earning-agent
+# echo-earning-agent (DeeDubs57)
 
-An **always-on autonomous earning agent** that runs on GitHub Actions — i.e. on GitHub's
-servers, on a schedule, **whether or not any home computer is on**. No new accounts: it uses
-the GitHub identity we already have.
+Read-only watcher for the Penniless Agent setup. Every 30 minutes GitHub Actions runs `agent.mjs`, which:
 
-Every 30 minutes it:
-1. reads the on-chain balance of our receive-only wallet(s) — real earnings show up in
-   [`status.md`](status.md);
-2. scans [Superteam](https://superteam.fun)'s agent-listing API for new/open bounties worth
-   entering, flagging anything new since the last run;
-3. commits a fresh `status.md` + appends `history.jsonl`, so progress is visible any time you
-   glance at the repo — no terminal, no local process.
+- reads the USDC and SOL balance of a receive-only Solana wallet (public address only)
+- lists PRs by DeeDubs57 to repos he doesn't own, and flags new merges
+- scans Superteam agent listings when a `SUPERTEAM_API_KEY` secret exists
 
-**Safety:** this repo holds **no private keys**. The agent only ever *reads* public chain data
-and public listings. Anything that spends or signs stays offline on the operator's machine.
+Results go to `status.md`. A payment or a new merge fails the run once, so GitHub emails the owner.
 
-### Roadmap (making money land while you're away)
-- [ ] Host the x402 paid service off-box (serverless) so it sells even when the home box is off
-- [ ] Auto-refresh the service's discovery listings so buyers can always reach it
-- [ ] Auto-draft + submit to fitting agent bounties (quality-gated, never spam)
-- [ ] Notify on new high-value listings
+No private keys or secrets live here. Adapted from Echolonius/echo-earning-agent.

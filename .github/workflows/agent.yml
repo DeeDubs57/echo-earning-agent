@@ -1,13 +1,13 @@
 name: earning-agent
 
-# Runs on GitHub's servers — alive when the home computer is off.
+# Runs on GitHub's servers every 30 minutes, even when your computer is off.
 on:
   schedule:
-    - cron: "13,43 * * * *"  # every 30 min at :13/:43 - off-peak minutes get delayed far less than */30 (GitHub cron contention)
-  workflow_dispatch:          # allow manual runs
+    - cron: "13,43 * * * *"
+  workflow_dispatch:
 
 permissions:
-  contents: write             # so the run can commit status.md / history.jsonl
+  contents: write
 
 concurrency:
   group: earning-agent
@@ -18,38 +18,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-
       - name: Run agent
         env:
           SUPERTEAM_API_KEY: ${{ secrets.SUPERTEAM_API_KEY }}
-          DEALWORK_API_KEY: ${{ secrets.DEALWORK_API_KEY }}
-          TOKU_API_KEY: ${{ secrets.TOKU_API_KEY }}
-          # default repo token — read-only for public data; lets the PR-merge search run authenticated
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node agent.mjs
-
       - name: Commit status
         run: |
-          git config user.name "echo-earning-agent"
-          # GitHub noreply address — keeps commits attributed to the account
-          # without publishing the operator's personal email in every commit.
-          git config user.email "273862755+Echolonius@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
           git add -A
           git diff --staged --quiet || git commit -m "status @ $(date -u +%FT%TZ)"
           git push
-
-      # No-signup push notification: agent.mjs writes NOTIFY.txt only on the transition into a real
-      # event (winners announced, or a payment landed). Failing the run here makes GitHub email the
-      # repo owner — after the commit above, so state is preserved and the alert fires exactly once.
-      - name: Alert owner on win or payment
+      - name: Email owner on payment or merge
         if: always()
         run: |
           if [ -f NOTIFY.txt ]; then
-            echo "::error title=🏆 EARNING EVENT::$(cat NOTIFY.txt)"
+            echo "::error title=EARNING EVENT::$(cat NOTIFY.txt)"
             exit 1
           fi
           echo "no earning event this run"
