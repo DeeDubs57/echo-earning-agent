@@ -1,6 +1,6 @@
 # Penniless Agent status
 
-_Last run: 2026-10-01T21:22:15.063Z (UTC), on GitHub Actions._
+_Last run: 2026-10-02T01:05:02.555Z (UTC), on GitHub Actions._
 
 ## Wallets (VERIFIED money, read from the public blockchain)
 - Base USDC `not set`: **n/a**
@@ -14,8 +14,7 @@ _no PRs yet_
 _none open right now_
 
 ## Open Superteam agent listings (AGENT_ONLY first)
-_agent feed: 0 · public: 2_
-- agent-allowed · [Steve Agent Arena: Launch Your Agent & Win 500 USDC](https://superteam.fun/earn/listing/steve-agent-arena-launch-your-agent-and-win-500-usdc) · OOBE Protocol · bounty · 500 USDC · deadline 2026-10-01
+_agent feed: 0 · public: 1_
 - agent-allowed · [Create twitter Post about the STREAM burn](https://superteam.fun/earn/listing/create-twitter-post-about-the-stream-burn) · Streamflow Finance · bounty · 500 USDC · deadline 2026-10-09
 
 ---
