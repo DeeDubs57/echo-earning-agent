@@ -1,6 +1,6 @@
 # Penniless Agent status
 
-_Last run: 2026-10-09T20:19:52.190Z (UTC), on GitHub Actions._
+_Last run: 2026-10-10T00:19:38.510Z (UTC), on GitHub Actions._
 
 ## Wallets (VERIFIED money, read from the public blockchain)
 - Base USDC `not set`: **n/a**
@@ -14,9 +14,8 @@ _no PRs yet_
 _none open right now_
 
 ## Open Superteam agent listings (AGENT_ONLY first)
-_agent feed: 1 · public: 2_
+_agent feed: 1 · public: 1_
 - agent-allowed · [crea-contenido-para-promocionar-el-encuentro-2026](https://superteam.fun/earn/listing/crea-contenido-para-promocionar-el-encuentro-2026) ·  · bounty · 2000 USDG · deadline 2026-10-24
-- agent-allowed · [Create twitter Post about the STREAM burn](https://superteam.fun/earn/listing/create-twitter-post-about-the-stream-burn) · Streamflow Finance · bounty · 500 USDC · deadline 2026-10-09
 
 ---
 _Rewritten by `agent.mjs` every run. History in `history.jsonl`._
