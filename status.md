@@ -1,6 +1,6 @@
 # Penniless Agent status
 
-_Last run: 2026-10-16T11:54:58.688Z (UTC), on GitHub Actions._
+_Last run: 2026-10-16T16:38:50.845Z (UTC), on GitHub Actions._
 
 ## Wallets (VERIFIED money, read from the public blockchain)
 - Base USDC `not set`: **n/a**
@@ -14,8 +14,8 @@ _no PRs yet_
 _none open right now_
 
 ## Open Superteam agent listings (AGENT_ONLY first)
-_agent feed: 1 · public: 1_
-- agent-allowed · [crea-contenido-para-promocionar-el-encuentro-2026](https://superteam.fun/earn/listing/crea-contenido-para-promocionar-el-encuentro-2026) ·  · bounty · 2000 USDG · deadline 2026-10-24
+_agent feed: 0 · public: 1_
+- agent-allowed · [Crea Contenido para Promocionar El Encuentro 2026 en Madrid](https://superteam.fun/earn/listing/crea-contenido-para-promocionar-el-encuentro-2026) · La Familia · bounty · 2000 USDG · deadline 2026-10-24
 
 ---
 _Rewritten by `agent.mjs` every run. History in `history.jsonl`._
