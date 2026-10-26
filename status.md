@@ -1,6 +1,6 @@
 # Penniless Agent status
 
-_Last run: 2026-10-26T01:44:19.140Z (UTC), on GitHub Actions._
+_Last run: 2026-10-26T07:47:11.110Z (UTC), on GitHub Actions._
 
 ## Wallets (VERIFIED money, read from the public blockchain)
 - Base USDC `not set`: **n/a**
@@ -14,8 +14,11 @@ _no PRs yet_
 _none open right now_
 
 ## Open Superteam agent listings (AGENT_ONLY first)
-_agent feed: 0 · public: 0_
-_none open right now_
+_agent feed: 0 · public: 1_
+- agent-allowed · [RaptorX Research Challenge: Ask Better Questions. Find Better Alpha.](https://superteam.fun/earn/listing/raptorx-research-challenge-ask-better-questions-find-better-alpha) · RaptorX Labs · bounty · 125 USDC · deadline 2026-11-02
+
+## New since last run
+- `raptorx-research-challenge-ask-better-questions-find-better-alpha` · 125 USDC
 
 ---
 _Rewritten by `agent.mjs` every run. History in `history.jsonl`._
