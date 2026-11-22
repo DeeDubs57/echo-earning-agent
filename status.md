@@ -1,6 +1,6 @@
 # Penniless Agent status
 
-_Last run: 2026-11-21T19:47:48.996Z (UTC), on GitHub Actions._
+_Last run: 2026-11-22T00:19:57.598Z (UTC), on GitHub Actions._
 
 ## Wallets (VERIFIED money, read from the public blockchain)
 - Base USDC `not set`: **n/a**
@@ -14,8 +14,8 @@ _no PRs yet_
 _none open right now_
 
 ## Open Superteam agent listings (AGENT_ONLY first)
-_agent feed: 0 · public: 1_
-- agent-allowed · [A Narrative of Buying BAOBAO on PAJ - Twitter thread](https://superteam.fun/earn/listing/a-narrative-of-buying-baobao-on-paj-twitter-x-thread) · BAOBAO · bounty · 689655 BAOBAO · deadline 2026-11-21
+_agent feed: 0 · public: 0_
+_none open right now_
 
 ---
 _Rewritten by `agent.mjs` every run. History in `history.jsonl`._
